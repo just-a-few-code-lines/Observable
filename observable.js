@@ -1,7 +1,7 @@
 'use strict';
 
 ((scope)=>{
-window.addDataListener = function( value, onChange ) {
+scope.addDataListener = function( value, onChange ) {
 	value = value.split('.');
 
 	let field = value.pop();
@@ -21,7 +21,7 @@ window.addDataListener = function( value, onChange ) {
 		handler.listeners[field].push(onChange);
 }
 
-window.Observable = class {
+scope.Observable = class {
 	constructor() {
 		return new Proxy( this, new Handler );
 	}
