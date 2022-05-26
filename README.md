@@ -111,17 +111,14 @@ class OtherClass {
 	a = { b:17 };
   
 	constructor() {
-		// would fail : addDataListener.call( object, "a", onchange ); 
-		addDataListener.call( object, "a.b", onchange )
+		// would fail : addDataListener.call( this, "a", onchange ); 
+		addDataListener.call( this, "a.b", onchange )
 	}
   
   ...
 }
 
 object = new OtherClass();
-
-// Setup listener
-addDataListener.call( object, "a.b", onchange );
 ```
 
 *Tests*
