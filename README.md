@@ -83,10 +83,10 @@ class TestClass extends Observable {
   ...
 }
 
-// Setup a listener from outside
-addDataListener.call( this, "*", onchange );
-
 object = new TestClass();
+
+// Setup a listener from outside
+addDataListener.call( object, "*", onchange );
 
 ```
 
