@@ -1,0 +1,93 @@
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <script src="Observable.js"></script>
+        <style>
+            .center { display:table;margin:32px auto 32px auto;}
+            .game { border: 1px solid black; padding:4px; }
+            .cell { display:inline-block;width:0;height:0;transition:all 1s linear;margin:8px; border-radius:6px;}
+            .cell.filled { background-color:black;transition:all 1s linear;margin:2px;width:12px;height:12px}
+        </style>
+    </head>
+    <body>
+        <div class="center">
+            Game of Life, using Observables and MVC paradigm
+        </div>
+        <div class="center game"></div>
+        <div class="center"><pre><code>
+// Controller : link the model to the view using data listeners
+let cellView = document.querySelectorAll('.game .cell');
+for( let y=0; y&lt;height; y++ ) {
+    addDataListener( `cells.${y}.*`, (v,o,x) => {
+        cellView[ y*width+(+x) ].classList.toggle( 'filled', v );
+    });
+}
+        </pre></code></div>
+        <script>
+            // Parameters
+            width = 48;
+            height = 32;
+
+            // Model : pure algorithm
+            function restart() {
+                for( let y=0; y<height; y++ ) {
+                    cells[y] = cells[y] || [];
+                    for( let x=0; x<width; x++ ) {
+                        cells[y][x] = Math.random()>0.5;
+                    }
+                }
+            }
+            function nextStep() {
+                let nxt = [];
+                // For each cell
+                for( let y=0; y<height; y++ ) {
+                    nxt[y] = [];
+                    for( let x=0; x<width; x++ ) {
+                        // Count enlightened adjacent cells
+                        let count = 0;
+                        for( let dy=-1; dy<=1; dy++ ) {
+                            for( let dx=-1; dx<=1; dx++ ) {
+                                if( (dx||dy) && cells[(height+y+dy)%height][(width+x+dx)%width] ) {
+                                    count++;
+                                }
+                            }
+                        }
+                        // Apply the game of life rule
+                        nxt[y][x] = cells[y][x] ? count==2 || count==3 : count==4;
+                    }
+                }
+                // Setup the new world, and computes its checksum
+                let chk = 0;
+                for( let y=0; y<height; y++ ) {
+                    for( let x=0; x<width; x++ ) {
+                        if( cells[y][x] != nxt[y][x] )
+                            chk += y*17+x;
+                        cells[y][x] = nxt[y][x];
+                    }
+                }
+                // Restart the game in case of loop
+                if( checksum.includes(chk) )
+                    restart();
+                checksum[ichecksum++%16] = chk;
+            }
+
+            window.cells=[];
+            checksum = [];
+            ichecksum = 0;
+            restart();
+            setInterval( nextStep, 1000 );
+
+            // View : pure html
+            let table = ('<DIV>'+('<DIV class=cell></DIV>'.repeat(width))+"</DIV>").repeat(height);
+            document.querySelector('.game').innerHTML = table;
+
+            // Controller : link the model to the view using data listeners
+            let cellView = document.querySelectorAll('.game .cell');
+            for( let y=0; y<height; y++ ) {
+                    addDataListener( `cells.${y}.*`, (v,o,x) => {
+                        cellView[ y*width+(+x) ].classList.toggle( 'filled', v );
+                    });
+            }
+        </script>
+    </body>
+</html>
