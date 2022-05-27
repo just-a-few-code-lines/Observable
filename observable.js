@@ -56,4 +56,39 @@ class Handler {
 		return true;
 	 }
 }
+
+// Set src value/structure to dst, preserving existing observed values in src
+scope.setPreservingObservables = function( dst, src ) {
+
+	if( (dst instanceof Object) && (src instanceof Object) && !((dst instanceof Array) ^ (src instanceof Array)) )
+		// two objects or two arrays
+		merge(dst,src);
+
+	else if( dst != src )
+		dst = src;
+
+	return dst;
+}
+
+function merge(d,s) {
+	Object.keys(d).forEach( (key) => {
+		if( key in s ) {
+			if( (d[key] instanceof Object) && (s[key] instanceof Object) && !((d[key] instanceof Array) ^ (s[key] instanceof Array)) ) {
+				// two objects or two arrays
+				merge( d[key], s[key] );
+			} else if( (d[key] instanceof Object) || (s[key] instanceof Object) || d[key] != s[key] ) {
+				// one object/array, or different values
+				d[key] = s[key];
+			}
+		} else {
+			d[key] = undefined;
+		}
+	});
+	Object.keys(s).forEach( (key) => {
+		if( !(key in d) ) {
+			d[key] = s[key];
+		}
+	});
+}
+
 })(window);
